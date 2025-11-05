@@ -34,7 +34,7 @@ with st.sidebar:
 paths = {
     "chart1": Path("charts/chart1.json"),
     "chart2": Path("charts/chart2.json"),
-    "chart3": Path("charts/chart3.json"),  # NEW chart on a new row
+    "chart4": Path("charts/chart4.json"),  # NEW chart on a new row
 }
 specs = {}
 for key, p in paths.items():
