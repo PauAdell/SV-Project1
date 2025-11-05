@@ -56,4 +56,22 @@ if spec1:
     spec1_sized = apply_size(spec1, None if fill_container else w, h)
     with left:
         st.subheader("Chart 1")
-        st.vega_lite_chart(spec1_sized, use_container_width=fil_
+        st.vega_lite_chart(spec1_sized, use_container_width=fill_container)
+
+if spec2:
+    spec2_sized = apply_size(spec2, None if fill_container else w, h)
+    with right:
+        st.subheader("Chart 2")
+        st.vega_lite_chart(spec2_sized, use_container_width=fill_container)
+
+# ---------- Optional: show raw specs ----------
+if show_specs:
+    st.divider()
+    st.subheader("Vega-Lite JSON")
+    cols = st.columns(2)
+    with cols[0]:
+        st.caption("chart1.json")
+        st.json(spec1 if spec1 else {"error": "not loaded"})
+    with cols[1]:
+        st.caption("chart2.json")
+        st.json(spec2 if spec2 else {"error": "not loaded"})
