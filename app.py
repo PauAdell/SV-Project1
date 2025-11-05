@@ -56,5 +56,5 @@ if "chart1" in specs or "chart3" in specs:
             st.vega_lite_chart(spec, use_container_width=False)
     with col4:
         if "chart3" in specs:
-            spec = apply_size(specs["chart3"], 30, 200)
+            spec = apply_size(specs["chart3"], 40, 200)
             st.vega_lite_chart(spec, use_container_width=False)
