@@ -12,14 +12,11 @@ def load_spec(path: str) -> dict:
     with open(path, "r") as f:
         return json.load(f)
 
-def fit_to_container(spec: dict) -> dict:
-    """Make the spec fill its container (width & height via CSS)."""
-    out = dict(spec)  # don't mutate cached
-    # Let container decide width/height; ask Vega-Lite to fit the container.
-    out.pop("width", None)
-    out.pop("height", None)
-    out["autosize"] = {"type": "fit", "contains": "padding"}
-    return out
+def apply_size(spec: dict, width: int, height: int) -> dict:
+    spec = dict(spec)  # avoid mutating cached object
+    spec["width"] = int(width)
+    spec["height"] = int(height)
+    return spec
 
 # ---------- Load JSON specs ----------
 paths = {
@@ -35,50 +32,29 @@ for key, p in paths.items():
     else:
         st.warning(f"Missing file: {p}")
 
-# ---------- Global styling to create a 2x2 grid that fits the viewport ----------
-st.markdown(
-    """
-    <style>
-      /* Reduce default padding so the two rows fit better */
-      .block-container { padding-top: 0.8rem; padding-bottom: 0.8rem; }
-
-      /* Each chart cell aims for ~45vh so two rows fit without scrolling */
-      .chartvh { height: 45vh; }
-      /* Make the embedded vega container fill that height */
-      .chartvh .vega-embed, .chartvh canvas, .chartvh svg { height: 100% !important; }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-USE_CONTAINER_WIDTH = True
-
-# ---------- ROW 1: chart4 | chart2 ----------
-if ("chart4" in specs) or ("chart2" in specs):
-    c1, c2 = st.columns(2)
-    if "chart4" in specs:
-        with c1:
-            st.markdown('<div class="chartvh">', unsafe_allow_html=True)
-            st.vega_lite_chart(fit_to_container(specs["chart4"]), use_container_width=USE_CONTAINER_WIDTH)
-            st.markdown("</div>", unsafe_allow_html=True)
-    if "chart2" in specs:
-        with c2:
-            st.markdown('<div class="chartvh">', unsafe_allow_html=True)
-            st.vega_lite_chart(fit_to_container(specs["chart2"]), use_container_width=USE_CONTAINER_WIDTH)
-            st.markdown("</div>", unsafe_allow_html=True)
+# ---------- Layout ----------
+# Row 1: chart4 (left) | chart2 (right)
+if "chart4" in specs or "chart2" in specs:
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        if "chart4" in specs:
+            spec = apply_size(specs["chart4"], 940, 300)
+            st.vega_lite_chart(spec, use_container_width=False)
+    with col2:
+        if "chart2" in specs:
+            spec = apply_size(specs["chart2"], 940, 300)
+            st.vega_lite_chart(spec, use_container_width=False)
 
 st.divider()
 
-# ---------- ROW 2: chart1 | chart3 ----------
-if ("chart1" in specs) or ("chart3" in specs):
-    c3, c4 = st.columns(2)
-    if "chart1" in specs:
-        with c3:
-            st.markdown('<div class="chartvh">', unsafe_allow_html=True)
-            st.vega_lite_chart(fit_to_container(specs["chart1"]), use_container_width=USE_CONTAINER_WIDTH)
-            st.markdown("</div>", unsafe_allow_html=True)
-    if "chart3" in specs:
-        with c4:
-            st.markdown('<div class="chartvh">', unsafe_allow_html=True)
-            st.vega_lite_chart(fit_to_container(specs["chart3"]), use_container_width=USE_CONTAINER_WIDTH)
-            st.markdown("</div>", unsafe_allow_html=True)
+# Row 2: chart1 (left) | chart3 (right)
+if "chart1" in specs or "chart3" in specs:
+    col3, col4 = st.columns([1, 2])  # chart3 is wider
+    with col3:
+        if "chart1" in specs:
+            spec = apply_size(specs["chart1"], 600, 200)
+            st.vega_lite_chart(spec, use_container_width=False)
+    with col4:
+        if "chart3" in specs:
+            spec = apply_size(specs["chart3"], 1300, 200)
+            st.vega_lite_chart(spec, use_container_width=False)
