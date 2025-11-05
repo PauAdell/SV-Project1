@@ -1,13 +1,7 @@
 # app.py
 import streamlit as st
 import altair as alt
-
-!pip install pydytuesday
-!pip install pycountry_convert
-!pip install altair==5.5.0
 import pydytuesday
-import altair as alt
-
 import pandas as pd
 
 # Read country visa datasets
@@ -668,15 +662,8 @@ chart = (
 
 chart
 
-import altair as alt
 from vega_datasets import data
-import pandas as pd
 
-# 1) Make sure you have ISO conversion available
-try:
-    import pycountry
-except ImportError:
-    raise RuntimeError("pip install pycountry")
 
 def iso_to_numeric(code):
     """Convert ISO alpha-2 (e.g. 'AF') or alpha-3 ('AFG') to ISO numeric (int)."""
