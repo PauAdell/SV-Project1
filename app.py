@@ -13,65 +13,73 @@ def load_spec(path: str) -> dict:
         return json.load(f)
 
 def apply_size(spec: dict, width: int | None, height: int | None) -> dict:
-    # Make a shallow copy so we don't mutate the cache
-    spec = dict(spec)
+    spec = dict(spec)  # avoid mutating cached object
     if width is not None:
         spec["width"] = int(width)
     if height is not None:
         spec["height"] = int(height)
     return spec
 
-# ---------- Inputs ----------
-left, right = st.columns(2)
-
+# ---------- Sidebar controls (shared) ----------
 with st.sidebar:
     st.header("Display options")
-    w = st.slider("Chart width", 400, 1400, 700, step=10)
-    h = st.slider("Chart height", 200, 800, 400, step=10)
-    fill_container = st.checkbox("Use container width (overrides width)", value=False)
+    w_row1 = st.slider("Row 1 width (each col)", 350, 1200, 600, step=10)
+    h_row1 = st.slider("Row 1 height", 200, 800, 380, step=10)
+    w_row2 = st.slider("Row 2 width", 400, 1600, 1200, step=10)
+    h_row2 = st.slider("Row 2 height", 200, 900, 420, step=10)
+    fill_container = st.checkbox("Use container width (ignore width values)", value=False)
     show_specs = st.checkbox("Show JSON specs", value=False)
 
-# ---------- Load specs ----------
-chart1_path = Path("charts/chart1.json")
-chart2_path = Path("charts/chart2.json")
+# ---------- Load JSON specs ----------
+paths = {
+    "chart1": Path("charts/chart1.json"),
+    "chart2": Path("charts/chart2.json"),
+    "chart3": Path("charts/chart3.json"),  # NEW chart on a new row
+}
+specs = {}
+for key, p in paths.items():
+    if p.exists():
+        specs[key] = load_spec(str(p))
+    else:
+        st.warning(f"Missing file: {p}")
 
-errors = []
-spec1 = spec2 = None
+# ---------- ROW 1: two charts side-by-side ----------
+if "chart1" in specs or "chart2" in specs:
+    c1, c2 = st.columns(2)
+    if "chart1" in specs:
+        with c1:
+            st.subheader("Chart 1")
+            spec = apply_size(specs["chart1"], None if fill_container else w_row1, h_row1)
+            st.vega_lite_chart(spec, use_container_width=fill_container)
+    if "chart2" in specs:
+        with c2:
+            st.subheader("Chart 2")
+            spec = apply_size(specs["chart2"], None if fill_container else w_row1, h_row1)
+            st.vega_lite_chart(spec, use_container_width=fill_container)
 
-if chart1_path.exists():
-    spec1 = load_spec(str(chart1_path))
-else:
-    errors.append(f"Missing file: {chart1_path}")
+st.divider()
 
-if chart2_path.exists():
-    spec2 = load_spec(str(chart2_path))
-else:
-    errors.append(f"Missing file: {chart2_path}")
+# ---------- ROW 2: one full-width chart (Chart 3) ----------
+if "chart4" in specs:
+    st.subheader("Chart 4")
+    spec = apply_size(specs["chart4"], None if fill_container else w_row2, h_row2)
+    st.vega_lite_chart(spec, use_container_width=fill_container)
 
-if errors:
-    st.error(" • " + "\n • ".join(errors))
-
-# ---------- Render ----------
-if spec1:
-    spec1_sized = apply_size(spec1, None if fill_container else w, h)
-    with left:
-        st.subheader("Chart 1")
-        st.vega_lite_chart(spec1_sized, use_container_width=fill_container)
-
-if spec2:
-    spec2_sized = apply_size(spec2, None if fill_container else w, h)
-    with right:
-        st.subheader("Chart 2")
-        st.vega_lite_chart(spec2_sized, use_container_width=fill_container)
+# --- If you prefer 3 charts in the second row, uncomment this block ---
+# if all(k in specs for k in ("chart1","chart2","chart3")):
+#     st.markdown("### Row 2 (three columns example)")
+#     r2c1, r2c2, r2c3 = st.columns(3)
+#     for col, key in zip((r2c1, r2c2, r2c3), ("chart1","chart2","chart3")):
+#         with col:
+#             spec = apply_size(specs[key], None if fill_container else int(w_row2/3), h_row2)
+#             st.vega_lite_chart(spec, use_container_width=fill_container)
 
 # ---------- Optional: show raw specs ----------
 if show_specs:
     st.divider()
     st.subheader("Vega-Lite JSON")
-    cols = st.columns(2)
-    with cols[0]:
-        st.caption("chart1.json")
-        st.json(spec1 if spec1 else {"error": "not loaded"})
-    with cols[1]:
-        st.caption("chart2.json")
-        st.json(spec2 if spec2 else {"error": "not loaded"})
+    cols = st.columns(3)
+    for col, key in zip(cols, ("chart1","chart2","chart4")):
+        with col:
+            st.caption(f"{key}.json")
+            st.json(specs.get(key, {"error": "not loaded"}))
