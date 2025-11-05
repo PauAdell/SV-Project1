@@ -1201,7 +1201,7 @@ overlay_top_total  = id_outline_overlay(top15_total_ids, "#cc00cc", p_top_total)
 chart4 = (
     base
     + overlay_nato + overlay_csto + overlay_aukus + overlay_five + overlay_quad
-    + overlay_top_pc + overlay_top_total `
+    + overlay_top_pc + overlay_top_total
 ).add_params(p_nato, p_csto, p_aukus, p_five, p_quad, p_top_pc, p_top_total)
 
 chart4
