@@ -3,8 +3,8 @@ import json
 from pathlib import Path
 import streamlit as st
 
-st.set_page_config(page_title="Altair Charts Host", layout="wide")
-st.title("Altair Charts Host")
+st.set_page_config(page_title="Scientific Visualization Practical work", layout="wide")
+st.title("Scientific Visualization Practical work")
 
 # ---------- Helpers ----------
 @st.cache_data
@@ -48,12 +48,12 @@ if "chart1" in specs or "chart2" in specs:
     c1, c2 = st.columns(2)
     if "chart1" in specs:
         with c1:
-            st.subheader("Chart 1")
+            #st.subheader("Chart 1")
             spec = apply_size(specs["chart1"], None if fill_container else w_row1, h_row1)
             st.vega_lite_chart(spec, use_container_width=fill_container)
     if "chart2" in specs:
         with c2:
-            st.subheader("Chart 2")
+            #st.subheader("Chart 2")
             spec = apply_size(specs["chart2"], None if fill_container else w_row1, h_row1)
             st.vega_lite_chart(spec, use_container_width=fill_container)
 
@@ -61,7 +61,7 @@ st.divider()
 
 # ---------- ROW 2: one full-width chart (Chart 3) ----------
 if "chart4" in specs:
-    st.subheader("Chart 4")
+    #st.subheader("Chart 4")
     spec = apply_size(specs["chart4"], None if fill_container else w_row2, h_row2)
     st.vega_lite_chart(spec, use_container_width=fill_container)
 
