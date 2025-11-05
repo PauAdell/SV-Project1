@@ -42,7 +42,7 @@ if "chart4" in specs or "chart2" in specs:
             st.vega_lite_chart(spec, use_container_width=False)
     with col2:
         if "chart2" in specs:
-            spec = apply_size(specs["chart2"], 940, 300)
+            spec = apply_size(specs["chart2"], 700, 300)
             st.vega_lite_chart(spec, use_container_width=False)
 
 st.divider()
@@ -52,7 +52,7 @@ if "chart1" in specs or "chart3" in specs:
     col3, col4 = st.columns([1, 2])  # chart3 is wider
     with col3:
         if "chart1" in specs:
-            spec = apply_size(specs["chart1"], 800, 200)
+            spec = apply_size(specs["chart1"], 900, 300)
             st.vega_lite_chart(spec, use_container_width=False)
     with col4:
         if "chart3" in specs:
