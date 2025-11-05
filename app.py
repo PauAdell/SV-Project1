@@ -3,7 +3,7 @@ import streamlit as st, json
 st.set_page_config(page_title="Altair Chart Host", layout="wide")
 st.title("Altair Chart Host")
 
-with open("charts/chart1_inline.json", "r") as f:
+with open("charts/chart1.json", "r") as f:
     spec = json.load(f)
 
 # Render the raw Vega-Lite spec
